@@ -26,7 +26,7 @@
    MODIFICATIONS.
 */
 
-#include "threads/synch.h"
+#include "synch.h"
 #include <stdio.h>
 #include <string.h>
 #include "threads/interrupt.h"
