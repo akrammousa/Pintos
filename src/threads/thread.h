@@ -101,6 +101,11 @@ struct thread
     struct list_elem holdedDonee; //eldonator ymskni mnha
     struct list_elem *doneeElem; // masek eli t7tia
 
+    //islam hayebda2 ye3adel
+    int nice_value;             //the nice value
+    int recent_cpu;             //the cpu value till now
+    // islam 3adel 5alas
+
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
@@ -110,6 +115,7 @@ struct thread
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };
+int load_avg;
 
 /* If false (default), use round-robin scheduler.
    If true, use multi-level feedback queue scheduler.

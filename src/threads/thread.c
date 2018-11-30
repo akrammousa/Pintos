@@ -18,6 +18,8 @@
 #include <random.h>
 #include <stdio.h>
 #include <string.h>
+#include <timer.h>
+#include <math.h>
 #include "threads/flags.h"
 #include "threads/interrupt.h"
 #include "threads/intr-stubs.h"
@@ -26,6 +28,9 @@
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "thread.h"
+#include "vaddr.h"
+
+#define q 14 // this is a precision for the floating point implementation (p.q = 17.14 )
 
 #ifdef USERPROG
 #include "userprog/process.h"
@@ -90,6 +95,17 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
+//now islam will put the floating point functions headers
+int convert_int_to_fixed(int);
+int convert_fixed_to_int(int);
+int add_two_fixed(int , int);
+int sub_two_fixed(int , int);
+int mul_two_fixed(int , int);
+int mul_one_fixed_one_int(int , int);
+int div_two_fixed(int, int);
+int div_one_fixed_one_int(int , int );
+int div_two_integer(int, int);
+
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
    general and it is possible in this case only because loader.S
@@ -153,6 +169,35 @@ thread_tick (void)
 #endif
   else
     kernel_ticks++;
+
+  if(timer_ticks() % TIMER_FREQ == 0) {
+      if(!strcmp(thread_current()->name, "idle") == 0) {
+          load_avg = convert_fixed_to_int(
+                  mul_one_fixed_one_int(div_two_integer(59,60), load_avg) +
+                  mul_one_fixed_one_int(div_two_integer(1,60), (int)(list_size(&ready_list) + 1))); //todo done converting
+      } else {
+          load_avg = convert_fixed_to_int(
+                  mul_one_fixed_one_int(div_two_integer(59,60), load_avg) +
+                  mul_one_fixed_one_int(div_two_integer(1,60), (int)(list_size(&ready_list))));
+      }
+      struct list_elem *e;
+      for (e = list_begin (&all_list); e != list_end (&all_list); e = list_next (e))
+      {
+          struct thread *f = list_entry (e, struct thread, elem);
+          f->recent_cpu = convert_fixed_to_int(
+                  div_two_integer((2*load_avg),(2*load_avg + 1))*(f->recent_cpu)) + f->nice_value;
+      }
+
+  }
+
+  if(timer_ticks() % 4 == 0) {
+      struct list_elem *e;
+      for (e = list_begin (&all_list); e != list_end (&all_list); e = list_next (e))
+      {
+          struct thread *t = list_entry (e, struct thread, elem);
+          t->priority = PRI_MAX - convert_fixed_to_int(div_two_integer(t->recent_cpu , 4)) - (t->nice_value * 2);
+      }
+  }
 
   /* Enforce preemption. */
   if (++thread_ticks >= TIME_SLICE)
@@ -220,6 +265,10 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
+
+  if(t->priority>thread_current()->priority){
+      thread_yield();
+  }
 
   return tid;
 }
@@ -415,31 +464,28 @@ thread_get_priority (void)
 void
 thread_set_nice (int nice UNUSED) 
 {
-  /* Not yet implemented. */
+  thread_current() -> nice_value = nice;
 }
 
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+    return thread_current() -> nice_value;
 }
 
 /* Returns 100 times the system load average. */
 int
 thread_get_load_avg (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  return 100 * load_avg;
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+    return 100 * thread_current()-> recent_cpu;
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -523,16 +569,24 @@ init_thread (struct thread *t, const char *name, int priority)
   ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
   ASSERT (name != NULL);
 
+
   memset (t, 0, sizeof *t);
   t->status = THREAD_BLOCKED;
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
+  if(thread_mlfqs) { //hasta3'al 3al advanced
+      if(strcmp(t->name, "main") == 0) {
+          t->recent_cpu = 0;
+      } else {
+          t->recent_cpu = thread_get_recent_cpu() / 100; //todo -- recheck in case of error ---no need to float ---
+      }
+      priority = PRI_MAX - convert_fixed_to_int(div_two_integer(t->recent_cpu, 4)) - (t->nice_value * 2);
+  }
   t->priority = priority;
   t->startPriority = priority;
   list_init(&t->myValues);
   t->doneeElem = NULL;
   t->magic = THREAD_MAGIC;
-
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
   intr_set_level (old_level);
@@ -675,8 +729,45 @@ void insert_in_order_in_ready_queue(struct thread *donee){
     }
 }
 
+//islam will put the floating point functions.
 
 
+int convert_int_to_fixed(int x) {
+    int y = x*(int)(pow(2,q));
+    return y;
+}
+int convert_fixed_to_int(int x) {
+    if(x >= 0) {
+        return (x + (int)(pow(2,(q-1)))) / (int)(pow(2,q));
+    } else {
+        return (x - (int)(pow(2,(q-1)))) / (int)(pow(2,q));
+    }
+}
+int add_two_fixed(int x, int y) {
+    return x + y;
+}
+int sub_two_fixed(int bigger, int smaller) {
+    return bigger - smaller;
+}
+int mul_two_fixed(int x, int y) {
+    long long z = x * y;
+    return (int)(z/(int)(pow(2,q)));
+}
+int mul_one_fixed_one_int(int x, int n) {
+    return x*n;
+}
+int div_two_fixed(int x, int y) {
+    long long z = x * (int)(pow(2,q));
+    return (int)(z/y);
+}
+int div_one_fixed_one_int(int fixed, int integer) {
+    return fixed/integer;
+}
+int div_two_integer(int x, int y) {
+    x = convert_int_to_fixed(x);
+    y = convert_int_to_fixed(y);
+    return div_two_fixed(x,y);
+}
 
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
