@@ -220,7 +220,9 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
-
+    if(t->priority > thread_current()->priority){
+        thread_yield();
+    }
   return tid;
 }
 
@@ -258,7 +260,7 @@ thread_unblock (struct thread *t)
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
     //printf(" list size %d \n" , list_size(&ready_list));
-    //printf("priority %d came \n" , t->priority);
+    //printf("priority %d came , %d \n" , t->priority , t->tid);
   //replaced with list_insert for priority
     if(!list_empty(&ready_list)) {
         struct list_elem *tempNode;
@@ -266,13 +268,14 @@ thread_unblock (struct thread *t)
         for (tempNode = list_begin(&ready_list); tempNode != list_end(&ready_list);
              tempNode = list_next(tempNode)) {
             struct thread *tempThread = list_entry(tempNode, struct thread, elem);
-            if (tempThread->priority <= t->priority){
+            if (tempThread->priority < t->priority){
                 list_insert(&tempThread->elem , &t->elem);
                 inserted =true;
                 break;
             }
         }
         if (!inserted){
+            //printf("%d inserted \n",t->tid);
             list_push_back (&ready_list, &t->elem);
         }
     }
@@ -280,12 +283,11 @@ thread_unblock (struct thread *t)
         list_push_back (&ready_list, &t->elem);
     }
 //  list_push_back (&ready_list, &t->elem);
-  t->status = THREAD_READY;
+    t->status = THREAD_READY;
 
-//   if(thread_current()->priority < t->priority){
-//       thread_yield();
-//   }
-  intr_set_level (old_level);
+//    thread_yield();
+    intr_set_level (old_level);
+    //thread_yield();
 }
 
 /* Returns the name of the running thread. */
@@ -353,7 +355,8 @@ thread_yield (void)
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
-  if (cur != idle_thread)
+    //printf("yield :priority %d came , %d \n" , cur->priority , cur->tid);
+    if (cur != idle_thread)
       if(!list_empty(&ready_list)) {
           struct list_elem *tempNode;
           bool inserted=false;
@@ -373,6 +376,13 @@ thread_yield (void)
       else{
           list_push_back (&ready_list, &cur->elem);
       }
+    //struct list_elem *tempNode;
+//    for (tempNode = list_begin(&ready_list); tempNode != list_end(&ready_list);
+//         tempNode = list_next(tempNode)) {
+//        struct thread *tempThread = list_entry(tempNode, struct thread, elem);
+////        printf("list :priority %d  , name = %d \n" , tempThread->priority , tempThread->tid);
+//
+//    }
         //list_push_back (&ready_list, &cur->elem);
 //  list_push_back()
     cur->status = THREAD_READY;
@@ -401,7 +411,21 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
-  thread_current ()->priority = new_priority;
+    enum intr_level old_level;
+    old_level = intr_disable();
+//    printf ("ready size %d \n", list_size(&ready_list));
+//    struct thread *tempThread = list_entry(list_front(&ready_list), struct thread, elem);
+//    printf ("current Top: %d \n", tempThread->priority);
+//    printf("current before setting: %d \n",thread_current()->priority);
+//
+//        printf("priority %d will be changed , thread num =%d \n" , thread_current()->priority , thread_current()->tid);
+
+    thread_current ()->priority = new_priority;
+//    printf("current after setting inner: %d \n",thread_current()->priority);
+    thread_yield();
+    //printf("priority %d changed , thread num =%d \n" , thread_current()->priority , thread_current()->tid);
+    intr_set_level (old_level);
+
 }
 
 /* Returns the current thread's priority. */
