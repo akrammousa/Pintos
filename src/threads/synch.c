@@ -69,27 +69,27 @@ sema_down (struct semaphore *sema)
   while (sema->value == 0) 
     {
 
-        if(!list_empty(&sema->waiters)) {
-            struct list_elem *tempNode;
-            bool inserted=false;
-            for (tempNode = list_begin(&sema->waiters); tempNode != list_end(&sema->waiters);
-                 tempNode = list_next(tempNode)) {
-                struct thread *tempThread = list_entry(tempNode, struct thread, elem);
-                if (tempThread->priority < thread_current ()->priority){
-                    list_insert(tempNode , &thread_current ()->elem);
-                    inserted =true;
-                    break;
-                }
-            }
-            if (!inserted){
-                list_push_back (&sema->waiters, &thread_current ()->elem);
-            }
-        }
-        else{
-            list_push_back (&sema->waiters, &thread_current ()->elem);
-        }
+//        if(!list_empty(&sema->waiters)) {
+//            struct list_elem *tempNode;
+//            bool inserted=false;
+//            for (tempNode = list_begin(&sema->waiters); tempNode != list_end(&sema->waiters);
+//                 tempNode = list_next(tempNode)) {
+//                struct thread *tempThread = list_entry(tempNode, struct thread, elem);
+//                if (tempThread->priority < thread_current ()->priority){
+//                    list_insert(tempNode , &thread_current ()->elem);
+//                    inserted =true;
+//                    break;
+//                }
+//            }
+//            if (!inserted){
+//                list_push_back (&sema->waiters, &thread_current ()->elem);
+//            }
+//        }
+//        else{
+//            list_push_back (&sema->waiters, &thread_current ()->elem);
+//        }
 
-      //list_push_back (&sema->waiters, &thread_current ()->elem);
+      list_push_back (&sema->waiters, &thread_current ()->elem);
       thread_block ();
     }
   sema->value--;
@@ -216,24 +216,24 @@ lock_acquire (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
-  enum intr_level old_level;
-  old_level = intr_disable ();
-  struct thread* lockHolder = lock->holder;
-  int lockHolderPriority = lock->holder->priority;
-  if (lock->holder->priority < thread_current()->priority){
-      struct value_elem *tempValueElem;
-      tempValueElem->value = lock->holder->priority;
-      list_push_front(&lock->holder->myValues ,&tempValueElem->elem);
-      lockHolder->priority = thread_get_priority();
-      thread_current()->doneeElem = &lockHolder->holdedDonee;
-      handle_nested_donation(lockHolder->doneeElem,thread_get_priority());
-      add_in_front_in_ready_queue(&lockHolder->elem);
-
-
-  }
-  intr_set_level(old_level);
+//  enum intr_level old_level;
+//  old_level = intr_disable ();
+//  struct thread* lockHolder = lock->holder;
+//  int lockHolderPriority = lock->holder->priority;
+//  if (lock->holder->priority < thread_current()->priority){
+//      struct value_elem *tempValueElem;
+//      tempValueElem->value = lock->holder->priority;
+//      list_push_front(&lock->holder->myValues ,&tempValueElem->elem);
+//      lockHolder->priority = thread_get_priority();
+//      thread_current()->doneeElem = &lockHolder->holdedDonee;
+//      handle_nested_donation(lockHolder->doneeElem,thread_get_priority());
+//      add_in_front_in_ready_queue(&lockHolder->elem);
+//
+//
+//  }
+//  intr_set_level(old_level);
   sema_down (&lock->semaphore);
-  thread_current()->doneeElem = NULL;
+  //thread_current()->doneeElem = NULL;
   lock->holder = thread_current ();
 
 }
@@ -284,10 +284,10 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  struct value_elem *tempValueElem = list_entry (list_pop_front (&lock->holder->myValues), struct value_elem, elem);
-  thread_set_priority(tempValueElem->value);
-
-  insert_in_order_in_ready_queue(thread_current());
+//  struct value_elem *tempValueElem = list_entry (list_pop_front (&lock->holder->myValues), struct value_elem, elem);
+//  thread_set_priority(tempValueElem->value);
+//
+//  insert_in_order_in_ready_queue(thread_current());
   lock->holder = NULL;
   sema_up (&lock->semaphore);
 }
