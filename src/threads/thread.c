@@ -1,3 +1,17 @@
+//#include "thread.h"
+//#include <debug.h>
+//#include <stddef.h>
+//#include <random.h>
+//#include <stdio.h>
+//#include <string.h>
+//#include "flags.h"
+//#include "interrupt.h"
+//#include "intr-stubs.h"
+//#include "palloc.h"
+//#include "switch.h"
+//#include "synch.h"
+//#include "vaddr.h"
+//#include "thread.h"
 #include "threads/thread.h"
 #include <debug.h>
 #include <stddef.h>
@@ -47,6 +61,9 @@ struct kernel_thread_frame
     void *aux;                  /* Auxiliary data for function. */
   };
 
+
+
+
 /* Statistics. */
 static long long idle_ticks;    /* # of timer ticks spent idle. */
 static long long kernel_ticks;  /* # of timer ticks in kernel threads. */
@@ -94,6 +111,7 @@ thread_init (void)
   lock_init (&tid_lock);
   list_init (&ready_list);
   list_init (&all_list);
+
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -239,8 +257,34 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_push_back (&ready_list, &t->elem);
+    //printf(" list size %d \n" , list_size(&ready_list));
+    //printf("priority %d came \n" , t->priority);
+  //replaced with list_insert for priority
+    if(!list_empty(&ready_list)) {
+        struct list_elem *tempNode;
+        bool inserted=false;
+        for (tempNode = list_begin(&ready_list); tempNode != list_end(&ready_list);
+             tempNode = list_next(tempNode)) {
+            struct thread *tempThread = list_entry(tempNode, struct thread, elem);
+            if (tempThread->priority <= t->priority){
+                list_insert(&tempThread->elem , &t->elem);
+                inserted =true;
+                break;
+            }
+        }
+        if (!inserted){
+            list_push_back (&ready_list, &t->elem);
+        }
+    }
+    else{
+        list_push_back (&ready_list, &t->elem);
+    }
+//  list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
+
+   if(thread_current()->priority < t->priority){
+       thread_yield();
+   }
   intr_set_level (old_level);
 }
 
@@ -309,9 +353,29 @@ thread_yield (void)
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
-  if (cur != idle_thread) 
-    list_push_back (&ready_list, &cur->elem);
-  cur->status = THREAD_READY;
+  if (cur != idle_thread)
+      if(!list_empty(&ready_list)) {
+          struct list_elem *tempNode;
+          bool inserted=false;
+          for (tempNode = list_begin(&ready_list); tempNode != list_end(&ready_list);
+               tempNode = list_next(tempNode)) {
+              struct thread *tempThread = list_entry(tempNode, struct thread, elem);
+              if (tempThread->priority < cur->priority){
+                  list_insert(tempNode , &cur->elem);
+                  inserted =true;
+                  break;
+              }
+          }
+          if (!inserted){
+              list_push_back (&ready_list, &cur->elem);
+          }
+      }
+      else{
+          list_push_back (&ready_list, &cur->elem);
+      }
+        //list_push_back (&ready_list, &cur->elem);
+//  list_push_back()
+    cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
 }
@@ -464,6 +528,9 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
+  t->startPriority = priority;
+  list_init(&t->myValues);
+  t->doneeElem = NULL;
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
@@ -580,6 +647,36 @@ allocate_tid (void)
 
   return tid;
 }
+void add_in_front_in_ready_queue(struct thread *donee){
+    list_remove(&donee->elem);
+    list_push_front(&ready_list,&donee->elem);
+}
+
+void insert_in_order_in_ready_queue(struct thread *donee){
+    list_remove(&donee->elem);
+    if(!list_empty(&ready_list)) {
+        struct list_elem *tempNode;
+        bool inserted=false;
+        for (tempNode = list_begin(&ready_list); tempNode != list_end(&ready_list);
+             tempNode = list_next(tempNode)) {
+            struct thread *tempThread = list_entry(tempNode, struct thread, elem);
+            if (tempThread->priority <= donee->priority){
+                list_insert(tempNode , &donee->elem);
+                inserted =true;
+                break;
+            }
+        }
+        if (!inserted){
+            list_push_back (&ready_list, &donee->elem);
+        }
+    }
+    else{
+        list_push_back (&ready_list, &donee->elem);
+    }
+}
+
+
+
 
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */

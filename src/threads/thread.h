@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <lib/kernel/list.h>
 #include <stdint.h>
+#include <list.h>
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -88,12 +89,18 @@ struct thread
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
+    int startPriority;
     struct list_elem allelem;           /* List element for all threads list. */
     struct list_elem  bellem;
     int64_t blockStartTime;
     int64_t blockEndTime;
     /* Shared between thread.c and synch.c. */
-    struct list_elem elem;              /* List element. */
+    struct list_elem elem;/* List element. */
+    struct list myValues;
+    //struct list myDonees;
+    struct list_elem holdedDonee; //eldonator ymskni mnha
+    struct list_elem *doneeElem; // masek eli t7tia
+
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
@@ -111,7 +118,8 @@ extern bool thread_mlfqs;
 
 void thread_init (void);
 void thread_start (void);
-
+void add_in_front_in_ready_queue(struct thread *donee);
+void insert_in_order_in_ready_queue(struct thread *donee);
 void thread_tick (void);
 void thread_print_stats (void);
 
@@ -139,5 +147,12 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+
+
+struct value_elem
+{
+    int value;
+    struct list_elem elem;
+};
 
 #endif /* threads/thread.h */

@@ -102,7 +102,6 @@ timer_elapsed (int64_t then)
 void
 timer_sleep (int64_t ticks) 
 {
-    printf("%d \n" , ticks);
     ASSERT (intr_get_level () == INTR_ON);
     enum intr_level old_level = intr_disable ();
     struct thread *t= thread_current();
