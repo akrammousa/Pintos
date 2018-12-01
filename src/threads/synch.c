@@ -31,6 +31,7 @@
 #include <string.h>
 #include "threads/interrupt.h"
 #include "threads/thread.h"
+#include "thread.h"
 
 /* Initializes semaphore SEMA to VALUE.  A semaphore is a
    nonnegative integer along with two atomic operators for
@@ -68,28 +69,36 @@ sema_down (struct semaphore *sema)
   old_level = intr_disable ();
   while (sema->value == 0) 
     {
+     int counter =0;
+      if(!list_empty(&sema->waiters)) {
+        struct list_elem *tempNode;
+        bool inserted=false;
+        for (tempNode = list_begin(&sema->waiters); tempNode != list_end(&sema->waiters);
+             tempNode = list_next(tempNode)) {
+          counter++;
+          struct thread *tempThread = list_entry(tempNode, struct thread, elem);
+          if (tempThread->priority < thread_current()->priority){
+            list_insert(&tempThread->elem , &thread_current()->elem);
+            inserted =true;
+            break;
+          }
+        }
+        if (!inserted){
+          list_push_back (&sema->waiters, &thread_current()->elem);
+        }
+      }
+      else{counter = 1;
+        list_push_back (&sema->waiters, &thread_current()->elem);
+      }
 
-//        if(!list_empty(&sema->waiters)) {
-//            struct list_elem *tempNode;
-//            bool inserted=false;
-//            for (tempNode = list_begin(&sema->waiters); tempNode != list_end(&sema->waiters);
-//                 tempNode = list_next(tempNode)) {
-//                struct thread *tempThread = list_entry(tempNode, struct thread, elem);
-//                if (tempThread->priority < thread_current ()->priority){
-//                    list_insert(tempNode , &thread_current ()->elem);
-//                    inserted =true;
-//                    break;
-//                }
-//            }
-//            if (!inserted){
-//                list_push_back (&sema->waiters, &thread_current ()->elem);
-//            }
-//        }
-//        else{
-//            list_push_back (&sema->waiters, &thread_current ()->elem);
-//        }
+  /*
+      struct thread *tempThread = list_entry(list_front(&sema->waiters), struct thread, elem);
 
-      list_push_back (&sema->waiters, &thread_current ()->elem);
+      printf("first element priority %d \n", tempThread->priority);
+*/
+
+
+//      list_push_back (&sema->waiters, &thread_current ()->elem);
       thread_block ();
     }
   sema->value--;
@@ -134,9 +143,11 @@ sema_up (struct semaphore *sema)
   ASSERT (sema != NULL);
 
   old_level = intr_disable ();
-  if (!list_empty (&sema->waiters)) 
-    thread_unblock (list_entry (list_pop_front (&sema->waiters),
-                                struct thread, elem));
+  if (!list_empty (&sema->waiters)) {
+    struct thread *first = list_entry (list_pop_front(&sema->waiters),
+                                       struct thread, elem);
+    thread_unblock(first);
+  }
   sema->value++;
   intr_set_level (old_level);
 }
@@ -242,15 +253,15 @@ lock_acquire (struct lock *lock)
  */
 void
 handle_nested_donation(struct list_elem *doneeElem,int newPriority){
-    struct thread *tempThread = list_entry(doneeElem, struct thread, holdedDonee);
-    struct value_elem *tempValueElem;
-    tempValueElem->value = tempThread->priority;
-    list_push_front(&tempThread->myValues ,&tempValueElem->elem);
-    tempThread->priority = newPriority;
-    add_in_front_in_ready_queue(&tempThread->elem);
-    if(tempThread->doneeElem != NULL){
-        handle_nested_donation(tempThread->doneeElem , newPriority);
-    }
+//    struct thread *tempThread = list_entry(doneeElem, struct thread, holdedDonee);
+//    struct value_elem *tempValueElem;
+//    tempValueElem->value = tempThread->priority;
+//    list_push_front(&tempThread->myValues ,&tempValueElem->elem);
+//    tempThread->priority = newPriority;
+//    add_in_front_in_ready_queue(&tempThread->elem);
+//    if(tempThread->doneeElem != NULL){
+//        handle_nested_donation(tempThread->doneeElem , newPriority);
+//    }
 
 };
 /* Tries to acquires LOCK and returns true if successful or false

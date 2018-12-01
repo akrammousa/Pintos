@@ -92,6 +92,7 @@ static bool is_thread (struct thread *) UNUSED;
 static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
+int adjust_priority(int);
 static tid_t allocate_tid (void);
 
 //now islam will put the floating point functions headers
@@ -176,7 +177,7 @@ thread_tick (void)
       if(strcmp(t->name,"idle")!=0) {
           t->recent_cpu = add_one_fixed_one_int(t->recent_cpu, 1);
       }
-      if (timer_ticks() % (TIMER_FREQ + 34) == 0) {
+      if (timer_ticks() % (TIMER_FREQ) == 0) {
           // load_avg = convert_fixed_to_int(
           //                  mul_one_fixed_one_int(div_two_integer(59,60), load_avg) +
           //                  mul_one_fixed_one_int(div_two_integer(1,60), (int)(list_size(&ready_list) + 1)));
@@ -188,26 +189,32 @@ thread_tick (void)
                          div_one_fixed_one_int(convert_int_to_fixed(list_size(&ready_list)), 60);
           }
           struct list_elem *e;
-          int tempo = div_two_fixed(mul_one_fixed_one_int(load_avg,2),add_one_fixed_one_int(mul_one_fixed_one_int(load_avg,2),1));
+          int div_must_be_first = div_two_fixed(mul_one_fixed_one_int(load_avg,2),add_one_fixed_one_int(mul_one_fixed_one_int(load_avg,2),1));
           for (e = list_begin(&all_list); e != list_end(&all_list); e = list_next(e)) {
               struct thread *f = list_entry (e, struct thread, elem);
-              f->recent_cpu = add_one_fixed_one_int(mul_two_fixed(tempo,f->recent_cpu),f->nice_value);
+              f->recent_cpu = add_one_fixed_one_int(mul_two_fixed(div_must_be_first,f->recent_cpu),f->nice_value);
           }
 
       }
 
       if (timer_ticks() % 4 == 0) {
           struct list_elem *e;
+          enum intr_level old_level;
+          old_level = intr_disable ();
           for (e = list_begin(&all_list); e != list_end(&all_list); e = list_next(e)) {
               struct thread *f = list_entry (e, struct thread, elem);
-              f->priority =
-                      PRI_MAX - convert_fixed_to_int(div_one_fixed_one_int(f->recent_cpu, 4)) - (f->nice_value * 2);
+              f->priority =adjust_priority(
+                      PRI_MAX - convert_fixed_to_int(div_one_fixed_one_int(f->recent_cpu, 4)) - (f->nice_value * 2));
           }
+          intr_set_level(old_level);
+          intr_yield_on_return();
       }
+    } else {
+        /* Enforce preemption. */
+        if (++thread_ticks >= TIME_SLICE)
+            intr_yield_on_return();
     }
-  /* Enforce preemption. */
-  if (++thread_ticks >= TIME_SLICE)
-    intr_yield_on_return ();
+
 }
 
 /* Prints thread statistics. */
@@ -595,10 +602,12 @@ init_thread (struct thread *t, const char *name, int priority)
   if(thread_mlfqs) { //hasta3'al 3al advanced
       if(strcmp(t->name, "main") == 0) {
           t->recent_cpu = 0;
+          t->nice_value = 0;
       } else {
+          t->nice_value = thread_current()->nice_value;
           t->recent_cpu = thread_current()->recent_cpu/100; //todo -- recheck in case of error ---no need to float ---
       }
-      priority = PRI_MAX - convert_fixed_to_int(div_one_fixed_one_int(t->recent_cpu, 4)) - (t->nice_value * 2); // todo 2slay
+      priority = adjust_priority(PRI_MAX - convert_fixed_to_int(div_one_fixed_one_int(t->recent_cpu, 4)) - (t->nice_value * 2)); // todo 2slay
   } else
   {
       t->priority = priority;
@@ -787,6 +796,15 @@ int div_two_integer(int x, int y) {
     x = convert_int_to_fixed(x);
     y = convert_int_to_fixed(y);
     return div_two_fixed(x,y);
+}
+int adjust_priority(int p) {
+    if(p >=0 && p <= 63) {
+        return p;
+    } else if (p < 0) {
+        return 0;
+    } else {
+        return 63;
+    }
 }
 
 /* Offset of `stack' member within `struct thread'.
