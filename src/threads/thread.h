@@ -96,7 +96,7 @@ struct thread
     int64_t blockEndTime;
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;/* List element. */
-    struct list myValues;
+    struct list *myValues;
     //struct list myDonees;
     struct list_elem holdedDonee; //eldonator ymskni mnha
     struct list_elem *doneeElem; // masek eli t7tia

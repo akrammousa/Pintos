@@ -18,8 +18,7 @@
 #include <random.h>
 #include <stdio.h>
 #include <string.h>
-#include <timer.h>
-#include <math.h>
+#include "devices/timer.h"
 #include "threads/flags.h"
 #include "threads/interrupt.h"
 #include "threads/intr-stubs.h"
@@ -106,6 +105,8 @@ int div_two_fixed(int, int);
 int div_one_fixed_one_int(int , int );
 int div_two_integer(int, int);
 
+int add_one_fixed_one_int(int x, int n) ;
+
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
    general and it is possible in this case only because loader.S
@@ -170,35 +171,40 @@ thread_tick (void)
   else
     kernel_ticks++;
 
-  if(timer_ticks() % TIMER_FREQ == 0) {
-      if(!strcmp(thread_current()->name, "idle") == 0) {
-          load_avg = convert_fixed_to_int(
-                  mul_one_fixed_one_int(div_two_integer(59,60), load_avg) +
-                  mul_one_fixed_one_int(div_two_integer(1,60), (int)(list_size(&ready_list) + 1))); //todo done converting
-      } else {
-          load_avg = convert_fixed_to_int(
-                  mul_one_fixed_one_int(div_two_integer(59,60), load_avg) +
-                  mul_one_fixed_one_int(div_two_integer(1,60), (int)(list_size(&ready_list))));
+  //habda2 men hena
+    if(thread_mlfqs) {
+      if(strcmp(t->name,"idle")!=0) {
+          t->recent_cpu = add_one_fixed_one_int(t->recent_cpu, 1);
       }
-      struct list_elem *e;
-      for (e = list_begin (&all_list); e != list_end (&all_list); e = list_next (e))
-      {
-          struct thread *f = list_entry (e, struct thread, elem);
-          f->recent_cpu = convert_fixed_to_int(
-                  div_two_integer((2*load_avg),(2*load_avg + 1))*(f->recent_cpu)) + f->nice_value;
+      if (timer_ticks() % (TIMER_FREQ + 34) == 0) {
+          // load_avg = convert_fixed_to_int(
+          //                  mul_one_fixed_one_int(div_two_integer(59,60), load_avg) +
+          //                  mul_one_fixed_one_int(div_two_integer(1,60), (int)(list_size(&ready_list) + 1)));
+          if (!strcmp(running_thread()->name, "idle") == 0) {
+              load_avg = div_one_fixed_one_int(mul_one_fixed_one_int(load_avg, 59), 60) +
+                         div_one_fixed_one_int(convert_int_to_fixed(list_size(&ready_list) + 1), 60);
+          } else {
+              load_avg = div_one_fixed_one_int(mul_one_fixed_one_int(load_avg, 59), 60) +
+                         div_one_fixed_one_int(convert_int_to_fixed(list_size(&ready_list)), 60);
+          }
+          struct list_elem *e;
+          int tempo = div_two_fixed(mul_one_fixed_one_int(load_avg,2),add_one_fixed_one_int(mul_one_fixed_one_int(load_avg,2),1));
+          for (e = list_begin(&all_list); e != list_end(&all_list); e = list_next(e)) {
+              struct thread *f = list_entry (e, struct thread, elem);
+              f->recent_cpu = add_one_fixed_one_int(mul_two_fixed(tempo,f->recent_cpu),f->nice_value);
+          }
+
       }
 
-  }
-
-  if(timer_ticks() % 4 == 0) {
-      struct list_elem *e;
-      for (e = list_begin (&all_list); e != list_end (&all_list); e = list_next (e))
-      {
-          struct thread *t = list_entry (e, struct thread, elem);
-          t->priority = PRI_MAX - convert_fixed_to_int(div_two_integer(t->recent_cpu , 4)) - (t->nice_value * 2);
+      if (timer_ticks() % 4 == 0) {
+          struct list_elem *e;
+          for (e = list_begin(&all_list); e != list_end(&all_list); e = list_next(e)) {
+              struct thread *f = list_entry (e, struct thread, elem);
+              f->priority =
+                      PRI_MAX - convert_fixed_to_int(div_one_fixed_one_int(f->recent_cpu, 4)) - (f->nice_value * 2);
+          }
       }
-  }
-
+    }
   /* Enforce preemption. */
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
@@ -490,14 +496,14 @@ thread_get_nice (void)
 int
 thread_get_load_avg (void) 
 {
-  return 100 * load_avg;
+  return convert_fixed_to_int(mul_one_fixed_one_int(load_avg,100));
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) 
 {
-    return 100 * thread_current()-> recent_cpu;
+    return convert_fixed_to_int(mul_one_fixed_one_int(thread_current()->recent_cpu,100));
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -585,15 +591,18 @@ init_thread (struct thread *t, const char *name, int priority)
   t->status = THREAD_BLOCKED;
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
+
   if(thread_mlfqs) { //hasta3'al 3al advanced
       if(strcmp(t->name, "main") == 0) {
           t->recent_cpu = 0;
       } else {
-          t->recent_cpu = thread_get_recent_cpu() / 100; //todo -- recheck in case of error ---no need to float ---
+          t->recent_cpu = thread_current()->recent_cpu/100; //todo -- recheck in case of error ---no need to float ---
       }
-      priority = PRI_MAX - convert_fixed_to_int(div_two_integer(t->recent_cpu, 4)) - (t->nice_value * 2);
+      priority = PRI_MAX - convert_fixed_to_int(div_one_fixed_one_int(t->recent_cpu, 4)) - (t->nice_value * 2); // todo 2slay
+  } else
+  {
+      t->priority = priority;
   }
-  t->priority = priority;
   t->startPriority = priority;
   list_init(&t->myValues);
   t->doneeElem = NULL;
@@ -743,16 +752,17 @@ void insert_in_order_in_ready_queue(struct thread *donee){
 
 //islam will put the floating point functions.
 
-
+int add_one_fixed_one_int(int x, int n) {
+    return x + (16384 * n);
+}
 int convert_int_to_fixed(int x) {
-    int y = x*(int)(pow(2,q));
-    return y;
+    return x*16384;
 }
 int convert_fixed_to_int(int x) {
     if(x >= 0) {
-        return (x + (int)(pow(2,(q-1)))) / (int)(pow(2,q));
+        return (x + 8192) / 16384;
     } else {
-        return (x - (int)(pow(2,(q-1)))) / (int)(pow(2,q));
+        return (x - 8192) / 16384;
     }
 }
 int add_two_fixed(int x, int y) {
@@ -762,15 +772,13 @@ int sub_two_fixed(int bigger, int smaller) {
     return bigger - smaller;
 }
 int mul_two_fixed(int x, int y) {
-    long long z = x * y;
-    return (int)(z/(int)(pow(2,q)));
+    return ((int64_t) x ) * y / 16384;
 }
 int mul_one_fixed_one_int(int x, int n) {
     return x*n;
 }
 int div_two_fixed(int x, int y) {
-    long long z = x * (int)(pow(2,q));
-    return (int)(z/y);
+    return ((int64_t) x ) * 16384 / y;
 }
 int div_one_fixed_one_int(int fixed, int integer) {
     return fixed/integer;
