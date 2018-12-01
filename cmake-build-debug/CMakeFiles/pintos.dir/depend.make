@@ -1506,6 +1506,7 @@ CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/stdio.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/string.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/thread.c
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/thread.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/vaddr.h
 
 CMakeFiles/pintos.dir/src/userprog/exception.c.o: ../src/lib/debug.h
 CMakeFiles/pintos.dir/src/userprog/exception.c.o: ../src/lib/inttypes.h

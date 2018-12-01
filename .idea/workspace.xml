@@ -12,9 +12,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af36300a-b595-4efa-9175-6f8280b330ae" name="Default Changelist" comment="withoutDonation">
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/pintos.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/pintos.dir/depend.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/threads/thread.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads/thread.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/threads/thread.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads/thread.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -42,8 +44,8 @@
         <counts>
           <entry key="DESIGNDOC" value="1" />
           <entry key="S" value="3" />
-          <entry key="c" value="8" />
-          <entry key="h" value="9" />
+          <entry key="c" value="12" />
+          <entry key="h" value="11" />
           <entry key="txt" value="1" />
         </counts>
       </usages-collector>
@@ -51,21 +53,22 @@
         <counts>
           <entry key="Assembly file" value="3" />
           <entry key="CMakeLists.txt" value="1" />
-          <entry key="ObjectiveC" value="17" />
+          <entry key="ObjectiveC" value="23" />
           <entry key="PLAIN_TEXT" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="DESIGNDOC" value="13" />
-          <entry key="c" value="4358" />
-          <entry key="h" value="486" />
+          <entry key="c" value="5779" />
+          <entry key="h" value="498" />
           <entry key="txt" value="27" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="ObjectiveC" value="4844" />
+          <entry key="Doxygen file" value="1" />
+          <entry key="ObjectiveC" value="6276" />
           <entry key="PLAIN_TEXT" value="40" />
         </counts>
       </usages-collector>
@@ -73,45 +76,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/threads/thread.c">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/utils/setitimer-helper.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3742">
-              <caret line="205" column="40" lean-forward="true" selection-start-line="205" selection-start-column="40" selection-end-line="205" selection-end-column="40" />
+            <state relative-caret-position="192">
+              <caret line="8" selection-start-line="8" selection-end-line="8" />
               <folding>
-                <element signature="e#8169#8185#0" expanded="true" />
-                <element signature="e#14837#14897#0" expanded="true" />
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/threads/thread.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="246">
-              <caret line="145" column="15" selection-start-line="145" selection-start-column="15" selection-end-line="145" selection-end-column="15" />
-              <folding>
-                <element signature="e#4153#4249#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/threads/synch.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="312">
-              <caret line="95" column="2" selection-start-line="95" selection-start-column="2" selection-end-line="95" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/threads/synch.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="22" column="21" selection-start-line="22" selection-start-column="21" selection-end-line="22" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -119,8 +91,47 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lib/kernel/list.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="280" column="1" selection-start-line="280" selection-start-column="1" selection-end-line="280" selection-end-column="1" />
+            <state relative-caret-position="184">
+              <caret line="208" selection-start-line="208" selection-end-line="208" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/threads/synch.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="18" selection-start-line="18" selection-end-line="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/threads/thread.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1296">
+              <caret line="328" column="30" selection-start-line="328" selection-start-column="30" selection-end-line="328" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/threads/thread.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="313">
+              <caret line="160" column="22" selection-start-line="160" selection-start-column="22" selection-end-line="160" selection-end-column="22" />
+              <folding>
+                <element signature="e#4506#4602#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/threads/synch.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="25">
+              <caret line="241" column="3" lean-forward="true" selection-start-line="241" selection-start-column="3" selection-end-line="241" selection-end-column="3" />
             </state>
           </provider>
         </entry>
@@ -151,8 +162,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/devices/timer.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1226">
-              <caret line="138" column="22" selection-start-line="138" selection-start-column="20" selection-end-line="138" selection-end-column="22" />
+            <state relative-caret-position="-4151">
+              <caret line="23" column="14" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -161,36 +172,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ready</find>
-      <find>init</find>
-      <find>front</find>
-      <find>list_insert</find>
-      <find>switch_threads</find>
-      <find>v</find>
-      <find>value</find>
-      <find>-&gt;priority</find>
-      <find>ticks</find>
-      <find>thread_tick</find>
-      <find>t-&gt;</find>
-      <find>PiLo hda1</find>
-      <find>value_elem</find>
-      <find>next_thread</find>
-      <find>set_prior</find>
-      <find>thread_yield(</find>
-      <find>priority</find>
-      <find>yield</find>
-      <find>set_prio</find>
-      <find>list</find>
-      <find>print</find>
-      <find>set_pr</find>
-      <find>less</find>
-      <find>timer_ticks</find>
-      <find>pri</find>
+      <find>load_avg</find>
+      <find>div_two_integer</find>
+      <find>recent_cpu</find>
+      <find>add_two_fixed</find>
+      <find>thread_mlfqs</find>
+      <find>thread_get_recent_cpu</find>
+      <find>add_one_fixed_one_int</find>
+      <find>init_thre</find>
       <find>pr</find>
-      <find>prior</find>
-      <find>set</find>
-      <find>thread_yield</find>
+      <find>div_one_fixed_one_int</find>
+      <find>init_th</find>
+      <find>set_prio</find>
+      <find>100</find>
+      <find>myVal</find>
+      <find>//</find>
+      <find>printF</find>
       <find>printf</find>
+      <find>***</find>
+      <find>****</find>
+      <find>**</find>
+      <find>myva</find>
+      <find>init</find>
+      <find>thread_create</find>
+      <find>TIMER_FREQ</find>
+      <find>list_ins</find>
+      <find>list_insert</find>
+      <find>list</find>
+      <find>push</find>
+      <find>priority</find>
+      <find>add_</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -203,10 +214,10 @@
         <option value="$PROJECT_DIR$/src/lib/kernel/list.h" />
         <option value="$PROJECT_DIR$/src/devices/timer.c" />
         <option value="$PROJECT_DIR$/src/lib/kernel/list.c" />
-        <option value="$PROJECT_DIR$/src/threads/thread.h" />
         <option value="$PROJECT_DIR$/src/threads/synch.h" />
-        <option value="$PROJECT_DIR$/src/threads/synch.c" />
         <option value="$PROJECT_DIR$/src/threads/thread.c" />
+        <option value="$PROJECT_DIR$/src/threads/thread.h" />
+        <option value="$PROJECT_DIR$/src/threads/synch.c" />
       </list>
     </option>
   </component>
@@ -218,10 +229,10 @@
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-115" />
-    <option name="y" value="158" />
-    <option name="width" value="689" />
-    <option name="height" value="790" />
+    <option name="x" value="63" />
+    <option name="y" value="25" />
+    <option name="width" value="1027" />
+    <option name="height" value="1055" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -346,17 +357,17 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="86997000" />
+    <option name="totallyTimeSpent" value="122439000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="63" y="25" width="1857" height="1055" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.31460056" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19393939" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" visible="true" weight="0.0" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3290461" />
+      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.3290461" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -365,8 +376,9 @@
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" weight="0.14576635" />
       <window_info anchor="bottom" id="CMake" order="11" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.0" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -416,9 +428,6 @@
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/threads/switch.S">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/devices/block.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -433,37 +442,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/threads/synch.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="22" column="21" selection-start-line="22" selection-start-column="21" selection-end-line="22" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/threads/thread.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="246">
-          <caret line="145" column="15" selection-start-line="145" selection-start-column="15" selection-end-line="145" selection-end-column="15" />
-          <folding>
-            <element signature="e#4153#4249#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib/kernel/list.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="280" column="1" selection-start-line="280" selection-start-column="1" selection-end-line="280" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/threads/synch.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="95" column="2" selection-start-line="95" selection-start-column="2" selection-end-line="95" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/lib/kernel/list.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
@@ -471,21 +449,61 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/setitimer-helper.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/devices/timer.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1226">
-          <caret line="138" column="22" selection-start-line="138" selection-start-column="20" selection-end-line="138" selection-end-column="22" />
+        <state relative-caret-position="-4151">
+          <caret line="23" column="14" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/kernel/list.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="208" selection-start-line="208" selection-end-line="208" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/threads/synch.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/threads/thread.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3742">
-          <caret line="205" column="40" lean-forward="true" selection-start-line="205" selection-start-column="40" selection-end-line="205" selection-end-column="40" />
+        <state relative-caret-position="1296">
+          <caret line="328" column="30" selection-start-line="328" selection-start-column="30" selection-end-line="328" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/threads/switch.S">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/threads/thread.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="313">
+          <caret line="160" column="22" selection-start-line="160" selection-start-column="22" selection-end-line="160" selection-end-column="22" />
           <folding>
-            <element signature="e#8169#8185#0" expanded="true" />
-            <element signature="e#14837#14897#0" expanded="true" />
+            <element signature="e#4506#4602#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/threads/synch.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25">
+          <caret line="241" column="3" lean-forward="true" selection-start-line="241" selection-start-column="3" selection-end-line="241" selection-end-column="3" />
         </state>
       </provider>
     </entry>
